@@ -1,0 +1,27 @@
+{
+  "manifest_version":3,
+  "version":"1.0",
+  "name":"Pokémon Gen V GTS Verifier",
+  "description": "Pokémon Verifier https://pkmnclassic.net/gts/ https://www.serebii.net/games/pokeball.shtml",
+  "content_scripts":[
+    {
+     "matches":["*://pkmnclassic.net/*"],
+     "js":["main.js"]
+    }
+  ],
+  "action": {
+    "default_icon": "assets/icon.png",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "assets/icon16.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [ "compatibility.csv" ],
+      "matches": ["*://pkmnclassic.net/*"]
+    }
+  ]
+}
