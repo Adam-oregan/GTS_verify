@@ -1,7 +1,14 @@
 console.log("The extension is up and running");
 
-const FILE = chrome.runtime.getURL('compatibility.csv');
+let mode = "Gen V";
 
+let address = (mode == "Gen V") ? 'compatibility_GenV.csv' : 'compatibility_GenIV.csv';
+
+const FILE = chrome.runtime.getURL(address);
+
+let allPkmn = {};
+
+'use strict'
 fetch(FILE).then(response => response.text()).then(data => {
 	//------------------------------------------------
 	// creating the array
@@ -9,21 +16,19 @@ fetch(FILE).then(response => response.text()).then(data => {
 	
 	var pokeballs = csvArrays[0].slice(2);
 	
-	var allPkmn = {};
-	
-	for(x=1; x < csvArrays.length; x++){
-		var ASSIGN_TO_AllPkmn = {};
+	for(var x=1; x < csvArrays.length; x++){
+		var ASSIGN_TO_allPkmn = {};
 		
-		var currentROW = csvArrays[x]
+		var currentROW = csvArrays[x];
 		
 		var nameInRow  = currentROW[1];
 		var lvValues   = currentROW.slice(2);
 		
 		pokeballs.forEach((key, index) => {
-		  ASSIGN_TO_AllPkmn[key] = lvValues[index];
+		  ASSIGN_TO_allPkmn[key] = lvValues[index];
 		});
 		
-		allPkmn[nameInRow] = ASSIGN_TO_AllPkmn;
+		allPkmn[nameInRow] = ASSIGN_TO_allPkmn;
 	}
 
 	//------------------------------------------------
@@ -31,10 +36,10 @@ fetch(FILE).then(response => response.text()).then(data => {
 
 	let pokemonToTrade = document.getElementsByClassName("gtsOffer");
 
-	for(x = 0; x < pokemonToTrade.length; x++){
-		var testPkmn = pokemonToTrade[x];
+	for(var x=0; x < pokemonToTrade.length; x++){
+		var pkmnToTest = pokemonToTrade[x];
 		
-		var list = E(testPkmn, "li");
+		var list = E(pkmnToTest, "li");
 		
 		var pkmnImg  = E(list[0], "img")[0];
 		var pkmnNum  = pkmnImg.src; // parse to just image name
@@ -49,24 +54,24 @@ fetch(FILE).then(response => response.text()).then(data => {
 		/////////////////////////////
 		// legality test
 		
-		var legit = true;
+		var isLegit = true;
 		
-		minLV = allPkmn[pkmnName][pokeball];
+		let minLV = allPkmn[pkmnName][pokeball];
 		
-		if(minLV == "XXX") legit = false;
-		else legit = !(minLV > actualLV);
+		if(minLV == "XXX") 	isLegit = false;
+		else 				isLegit = !(actualLV < minLV);
 		
-		if(!legit) console.log(pkmnName + " is FAKE! \n" + actualLV + " is LESS than " + minLV);
+		if(!isLegit) console.log(pkmnName + " is FAKE! \n" + actualLV + " is LESS than " + minLV);
 		
 		//////////////////////////////////////
 		// print result on page
 		
-		var resultCell = E( ( E(testPkmn, "tr")[2] ), "td" )[1];
-		resultCell.innerText = legit.toString().toUpperCase();
+		var resultCell = (E( (E(pkmnToTest, "tr")[2]), "td" ))[1];
+		resultCell.innerText = isLegit.toString().toUpperCase();
 		
 		var rcs = S(resultCell);
 		
-		rcs.backgroundColor = legit ? "green" : "red" ;
+		rcs.backgroundColor = isLegit ? "green" : "red" ;
 		rcs.color 			= "white";
 		rcs.textAlign 		= "center";
 	}
@@ -95,6 +100,7 @@ https://www.serebii.net/games/pokeball.shtml
 POSSIBLE updates
 
 whether the asked pokemon is possible
+(when lv 1-9 -> check if <= lv9 possible
 
 accounting for shiny lock
 
@@ -102,4 +108,15 @@ accounting for wiimmfi events
 lv 80 arceus
 
 account for cases where min level was reduced in gen v
+
+abilities
+*/
+
+/*
+Amendments to source data
+
+starly - safari ball  xxx to lv 20
+
+feraligatr - wrong evo level?
+poke 36 -> 30 , rest 36 -> 31
 */

@@ -20,7 +20,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": [ "compatibility.csv" ],
+      "resources": [ "compatibility_GenIV.csv", "compatibility_GenV.csv" ],
       "matches": ["*://pkmnclassic.net/*"]
     }
   ]
